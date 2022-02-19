@@ -1,4 +1,7 @@
-$TERMINAL_CONFIG_PATH='C:\Users\'+$env:UserName+'\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\profiles.json'
+# if username doesn't match folder name, change this
+$userName = $env:UserName
+
+$TERMINAL_CONFIG_PATH='C:\Users\'+$userName+'\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\profiles.json'
 $configFileContent = Get-Content $TERMINAL_CONFIG_PATH -raw
 $configJson = $configFileContent -replace '(?m)(?<=^([^"]|"[^"]*")*)//.*' -replace '(?ms)/\*.*?\*/' | ConvertFrom-Json
 
@@ -134,13 +137,15 @@ $keyBindingsJson = '[
     }]
 ' | ConvertFrom-Json
 
-$configJson.keybindings += $keyBindingsJson
-$ubuntuConfig = $configJson.profiles.list | Where-Object {$_.'name' -eq 'Ubuntu-18.04'} 
+# uncomment this if you want keybindings
+# $configJson.keybindings += $keyBindingsJson
+
+$ubuntuConfig = $configJson.profiles.list | Where-Object {$_.'name' -eq 'Ubuntu'} 
 if(!$ubuntuConfig){
-	write-host("Ubuntu-18.04 is not found, check your terminal config.json file.")
+	write-host("Ubuntu is not found, check your terminal config.json file.")
 	exit
 }
-$ubuntuConfig.name += "❤️"
+# $ubuntuConfig.name += "❤️"
 $ubuntuConfig |  Add-Member -Type NoteProperty -Name 'fontFace' -Value 'DejaVu Sans Mono for Powerline'
 $ubuntuConfig |  Add-Member -Type NoteProperty -Name 'fontSize' -Value 10
 $ubuntuConfig |  Add-Member -Type NoteProperty -Name 'padding' -Value '0, 0, 0, 0'
@@ -150,7 +155,7 @@ $ubuntuConfig |  Add-Member -Type NoteProperty -Name 'acrylicOpacity' -Value 0.8
 
 
 #Save new config file.
-$TERMINAL_CONFIG_OUT_PATH='C:\Users\'+$env:UserName+'\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\profiles.json'
+$TERMINAL_CONFIG_OUT_PATH='C:\Users\'+$userName+'\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\profiles.json'
 
 $configJson | ConvertTo-Json -depth 32| set-content $TERMINAL_CONFIG_OUT_PATH
 
